@@ -12,5 +12,5 @@ Pod::Spec.new do |spec|
   spec.framework    = 'SystemConfiguration'
 
   spec.platform     = :ios, "7.0"
-  spec.dependency 'AFNetworking', '~> 1.0'
+  spec.dependency 'AFNetworking', '~> 3.0'
 end
