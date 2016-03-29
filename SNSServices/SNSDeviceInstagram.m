@@ -46,7 +46,7 @@ static NSString *const KEY_INSTAGRAM_ACCESS_TOKEN = @"KEY_INSTAGRAM_ACCESS_TOKEN
 }
 
 - (void) requestFileList {
-    NSError *error;
+//    NSError *error;
     if (![self hasAuthentication]) {
         [self addAuthenticationViews];
         return;
@@ -97,7 +97,7 @@ static NSString *const KEY_INSTAGRAM_ACCESS_TOKEN = @"KEY_INSTAGRAM_ACCESS_TOKEN
 
              if (![responseObject objectForKeyPath:@"pagination.next_max_id"]) {
                  // add delegate for successful fetching
-                 NSLog(@"Response: %d", imageList.count);
+                 NSLog(@"Response: %lu", (unsigned long)imageList.count);
              } else {
                  [self doRequestFileList:imageList
                                 forMaxID:[responseObject objectForKeyPath:@"pagination.next_max_id"]];
