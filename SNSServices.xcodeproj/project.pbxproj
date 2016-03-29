@@ -1,0 +1,435 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0759205876F67D4A5E9AAD6A /* libPods-SNSServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 85117C8E515E48F88B413182 /* libPods-SNSServices.a */; };
+		197A5164CF57AF16DF968152 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0A3E93C43EFF6828E5E39C9E /* libPods.a */; };
+		F90205D41C97AF1300D34B16 /* AuthenticationDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = F90205D31C97AE0800D34B16 /* AuthenticationDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F970967B1CA2803600616E2F /* SNSImageSource.h in Headers */ = {isa = PBXBuildFile; fileRef = F97096791CA2803600616E2F /* SNSImageSource.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F970967C1CA2803600616E2F /* SNSImageSource.m in Sources */ = {isa = PBXBuildFile; fileRef = F970967A1CA2803600616E2F /* SNSImageSource.m */; };
+		F970967F1CA2895600616E2F /* NSDictionary+Helper.h in Headers */ = {isa = PBXBuildFile; fileRef = F970967D1CA2895600616E2F /* NSDictionary+Helper.h */; };
+		F97096801CA2895600616E2F /* NSDictionary+Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = F970967E1CA2895600616E2F /* NSDictionary+Helper.m */; };
+		F9D1427F1C96230C002ADD92 /* SNSServices.h in Headers */ = {isa = PBXBuildFile; fileRef = F9D1427E1C96230C002ADD92 /* SNSServices.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F9D142911C962331002ADD92 /* SNSDeviceBase.h in Headers */ = {isa = PBXBuildFile; fileRef = F9D1428E1C962331002ADD92 /* SNSDeviceBase.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F9D142921C962331002ADD92 /* SNSDeviceBase.m in Sources */ = {isa = PBXBuildFile; fileRef = F9D1428F1C962331002ADD92 /* SNSDeviceBase.m */; };
+		F9D1429C1C9624EB002ADD92 /* AuthenticationWebViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = F9D142991C9624EB002ADD92 /* AuthenticationWebViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F9D1429D1C9624EB002ADD92 /* AuthenticationWebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F9D1429A1C9624EB002ADD92 /* AuthenticationWebViewController.m */; };
+		F9D1429E1C9624EB002ADD92 /* AuthenticationWebViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = F9D1429B1C9624EB002ADD92 /* AuthenticationWebViewController.xib */; };
+		F9D142A81C962800002ADD92 /* SNSServiceManager.h in Headers */ = {isa = PBXBuildFile; fileRef = F9D142A61C962800002ADD92 /* SNSServiceManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F9D142A91C962800002ADD92 /* SNSServiceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F9D142A71C962800002ADD92 /* SNSServiceManager.m */; };
+		F9D142C41C965B35002ADD92 /* SNSDeviceInstagram.h in Headers */ = {isa = PBXBuildFile; fileRef = F9D142C21C965B35002ADD92 /* SNSDeviceInstagram.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F9D142C51C965B35002ADD92 /* SNSDeviceInstagram.m in Sources */ = {isa = PBXBuildFile; fileRef = F9D142C31C965B35002ADD92 /* SNSDeviceInstagram.m */; };
+		F9D142C91C965B83002ADD92 /* AuthenticationWVCInstagram.h in Headers */ = {isa = PBXBuildFile; fileRef = F9D142C71C965B83002ADD92 /* AuthenticationWVCInstagram.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		F9D142CA1C965B83002ADD92 /* AuthenticationWVCInstagram.m in Sources */ = {isa = PBXBuildFile; fileRef = F9D142C81C965B83002ADD92 /* AuthenticationWVCInstagram.m */; };
+		F9D142D71C967C0B002ADD92 /* SNSServiceDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = F9D142D61C967B8A002ADD92 /* SNSServiceDelegate.h */; settings = {ATTRIBUTES = (Public, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0A3E93C43EFF6828E5E39C9E /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		48B966E2F0C4B2D140C7C403 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "../Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		85117C8E515E48F88B413182 /* libPods-SNSServices.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SNSServices.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DBC0C1CA840706D25D30E412 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "../Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
+		F90205D31C97AE0800D34B16 /* AuthenticationDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AuthenticationDelegate.h; sourceTree = "<group>"; };
+		F97096791CA2803600616E2F /* SNSImageSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SNSImageSource.h; sourceTree = "<group>"; };
+		F970967A1CA2803600616E2F /* SNSImageSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SNSImageSource.m; sourceTree = "<group>"; };
+		F970967D1CA2895600616E2F /* NSDictionary+Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+Helper.h"; sourceTree = "<group>"; };
+		F970967E1CA2895600616E2F /* NSDictionary+Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+Helper.m"; sourceTree = "<group>"; };
+		F9D1427B1C96230C002ADD92 /* SNSServices.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SNSServices.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F9D1427E1C96230C002ADD92 /* SNSServices.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SNSServices.h; sourceTree = "<group>"; };
+		F9D142801C96230C002ADD92 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F9D1428E1C962331002ADD92 /* SNSDeviceBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SNSDeviceBase.h; sourceTree = "<group>"; };
+		F9D1428F1C962331002ADD92 /* SNSDeviceBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SNSDeviceBase.m; sourceTree = "<group>"; };
+		F9D142991C9624EB002ADD92 /* AuthenticationWebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AuthenticationWebViewController.h; sourceTree = "<group>"; };
+		F9D1429A1C9624EB002ADD92 /* AuthenticationWebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AuthenticationWebViewController.m; sourceTree = "<group>"; };
+		F9D1429B1C9624EB002ADD92 /* AuthenticationWebViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AuthenticationWebViewController.xib; sourceTree = "<group>"; };
+		F9D142A61C962800002ADD92 /* SNSServiceManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SNSServiceManager.h; sourceTree = "<group>"; };
+		F9D142A71C962800002ADD92 /* SNSServiceManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SNSServiceManager.m; sourceTree = "<group>"; };
+		F9D142C21C965B35002ADD92 /* SNSDeviceInstagram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SNSDeviceInstagram.h; sourceTree = "<group>"; };
+		F9D142C31C965B35002ADD92 /* SNSDeviceInstagram.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SNSDeviceInstagram.m; sourceTree = "<group>"; };
+		F9D142C71C965B83002ADD92 /* AuthenticationWVCInstagram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AuthenticationWVCInstagram.h; sourceTree = "<group>"; };
+		F9D142C81C965B83002ADD92 /* AuthenticationWVCInstagram.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AuthenticationWVCInstagram.m; sourceTree = "<group>"; };
+		F9D142D61C967B8A002ADD92 /* SNSServiceDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SNSServiceDelegate.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F9D142771C96230C002ADD92 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0759205876F67D4A5E9AAD6A /* libPods-SNSServices.a in Frameworks */,
+				197A5164CF57AF16DF968152 /* libPods.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		CFFA4E04612C2799FD7A9F61 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				85117C8E515E48F88B413182 /* libPods-SNSServices.a */,
+				0A3E93C43EFF6828E5E39C9E /* libPods.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F9D142711C96230C002ADD92 = {
+			isa = PBXGroup;
+			children = (
+				F9D1427D1C96230C002ADD92 /* SNSServices */,
+				F9D1427C1C96230C002ADD92 /* Products */,
+				FEA89CB9C46E272777773F57 /* Pods */,
+				CFFA4E04612C2799FD7A9F61 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		F9D1427C1C96230C002ADD92 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F9D1427B1C96230C002ADD92 /* SNSServices.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		F9D1427D1C96230C002ADD92 /* SNSServices */ = {
+			isa = PBXGroup;
+			children = (
+				F9D1427E1C96230C002ADD92 /* SNSServices.h */,
+				F9D142D61C967B8A002ADD92 /* SNSServiceDelegate.h */,
+				F9D142A61C962800002ADD92 /* SNSServiceManager.h */,
+				F9D142A71C962800002ADD92 /* SNSServiceManager.m */,
+				F97096791CA2803600616E2F /* SNSImageSource.h */,
+				F970967A1CA2803600616E2F /* SNSImageSource.m */,
+				F970967D1CA2895600616E2F /* NSDictionary+Helper.h */,
+				F970967E1CA2895600616E2F /* NSDictionary+Helper.m */,
+				F9D142CB1C965B94002ADD92 /* SNSDevices */,
+				F9D142C61C965B3F002ADD92 /* Authentications */,
+				F9D142801C96230C002ADD92 /* Info.plist */,
+			);
+			path = SNSServices;
+			sourceTree = "<group>";
+		};
+		F9D142C61C965B3F002ADD92 /* Authentications */ = {
+			isa = PBXGroup;
+			children = (
+				F90205D31C97AE0800D34B16 /* AuthenticationDelegate.h */,
+				F9D142991C9624EB002ADD92 /* AuthenticationWebViewController.h */,
+				F9D1429A1C9624EB002ADD92 /* AuthenticationWebViewController.m */,
+				F9D1429B1C9624EB002ADD92 /* AuthenticationWebViewController.xib */,
+				F9D142C71C965B83002ADD92 /* AuthenticationWVCInstagram.h */,
+				F9D142C81C965B83002ADD92 /* AuthenticationWVCInstagram.m */,
+			);
+			name = Authentications;
+			sourceTree = "<group>";
+		};
+		F9D142CB1C965B94002ADD92 /* SNSDevices */ = {
+			isa = PBXGroup;
+			children = (
+				F9D1428E1C962331002ADD92 /* SNSDeviceBase.h */,
+				F9D1428F1C962331002ADD92 /* SNSDeviceBase.m */,
+				F9D142C21C965B35002ADD92 /* SNSDeviceInstagram.h */,
+				F9D142C31C965B35002ADD92 /* SNSDeviceInstagram.m */,
+			);
+			name = SNSDevices;
+			sourceTree = "<group>";
+		};
+		FEA89CB9C46E272777773F57 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				DBC0C1CA840706D25D30E412 /* Pods.debug.xcconfig */,
+				48B966E2F0C4B2D140C7C403 /* Pods.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		F9D142781C96230C002ADD92 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F9D1427F1C96230C002ADD92 /* SNSServices.h in Headers */,
+				F9D142A81C962800002ADD92 /* SNSServiceManager.h in Headers */,
+				F9D142D71C967C0B002ADD92 /* SNSServiceDelegate.h in Headers */,
+				F970967F1CA2895600616E2F /* NSDictionary+Helper.h in Headers */,
+				F970967B1CA2803600616E2F /* SNSImageSource.h in Headers */,
+				F9D142911C962331002ADD92 /* SNSDeviceBase.h in Headers */,
+				F9D142C41C965B35002ADD92 /* SNSDeviceInstagram.h in Headers */,
+				F9D1429C1C9624EB002ADD92 /* AuthenticationWebViewController.h in Headers */,
+				F9D142C91C965B83002ADD92 /* AuthenticationWVCInstagram.h in Headers */,
+				F90205D41C97AF1300D34B16 /* AuthenticationDelegate.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		F9D1427A1C96230C002ADD92 /* SNSServices */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F9D142831C96230C002ADD92 /* Build configuration list for PBXNativeTarget "SNSServices" */;
+			buildPhases = (
+				03AFA47493D900799493AEED /* Check Pods Manifest.lock */,
+				F9D142761C96230C002ADD92 /* Sources */,
+				F9D142771C96230C002ADD92 /* Frameworks */,
+				F9D142781C96230C002ADD92 /* Headers */,
+				F9D142791C96230C002ADD92 /* Resources */,
+				008D24424FF92D45E88879D3 /* Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SNSServices;
+			productName = SNSServices;
+			productReference = F9D1427B1C96230C002ADD92 /* SNSServices.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F9D142721C96230C002ADD92 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0720;
+				ORGANIZATIONNAME = "Joohae Kim";
+				TargetAttributes = {
+					F9D1427A1C96230C002ADD92 = {
+						CreatedOnToolsVersion = 7.2;
+						DevelopmentTeam = 6KBXYY2UW2;
+					};
+				};
+			};
+			buildConfigurationList = F9D142751C96230C002ADD92 /* Build configuration list for PBXProject "SNSServices" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = F9D142711C96230C002ADD92;
+			productRefGroup = F9D1427C1C96230C002ADD92 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F9D1427A1C96230C002ADD92 /* SNSServices */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F9D142791C96230C002ADD92 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F9D1429E1C9624EB002ADD92 /* AuthenticationWebViewController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		008D24424FF92D45E88879D3 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/../Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		03AFA47493D900799493AEED /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F9D142761C96230C002ADD92 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F9D142CA1C965B83002ADD92 /* AuthenticationWVCInstagram.m in Sources */,
+				F970967C1CA2803600616E2F /* SNSImageSource.m in Sources */,
+				F9D1429D1C9624EB002ADD92 /* AuthenticationWebViewController.m in Sources */,
+				F9D142C51C965B35002ADD92 /* SNSDeviceInstagram.m in Sources */,
+				F97096801CA2895600616E2F /* NSDictionary+Helper.m in Sources */,
+				F9D142A91C962800002ADD92 /* SNSServiceManager.m in Sources */,
+				F9D142921C962331002ADD92 /* SNSDeviceBase.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		F9D142811C96230C002ADD92 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		F9D142821C96230C002ADD92 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		F9D142841C96230C002ADD92 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = SNSServices/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = kr.carrotbooks.SNSServices;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		F9D142851C96230C002ADD92 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = SNSServices/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = kr.carrotbooks.SNSServices;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F9D142751C96230C002ADD92 /* Build configuration list for PBXProject "SNSServices" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F9D142811C96230C002ADD92 /* Debug */,
+				F9D142821C96230C002ADD92 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F9D142831C96230C002ADD92 /* Build configuration list for PBXNativeTarget "SNSServices" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F9D142841C96230C002ADD92 /* Debug */,
+				F9D142851C96230C002ADD92 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F9D142721C96230C002ADD92 /* Project object */;
+}
