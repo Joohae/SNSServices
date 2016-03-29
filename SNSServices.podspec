@@ -3,7 +3,7 @@ Pod::Spec.new do |spec|
   spec.version      = '0.1.0'
   spec.license      = { :type => 'BSD' }
   spec.homepage     = 'https://github.com/Joohae/SNSServices'
-  spec.authors      = { 'Tony Million' => 'tonymillion@gmail.com' }
+  spec.authors      = { 'Joohae Kim' => 'joohaek@gmail.com' }
   spec.summary      = 'ARC and GCD Compatible Reachability Class for iOS and OS X.'
   spec.source       = { :git => 'ihttps://github.com/Joohae/SNSServices.git', 
 			:tag => '#{s.version}' 
