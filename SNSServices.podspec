@@ -9,6 +9,7 @@ Pod::Spec.new do |spec|
 			:tag => '#{s.version}' 
 			}
   spec.source_files = 'SNSServices/*.{h,m}'
+  spec.resources    = 'SNSSErvices/*.xib'
   spec.framework    = 'SystemConfiguration'
 
   spec.platform     = :ios, "7.0"
