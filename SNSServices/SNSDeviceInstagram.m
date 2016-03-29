@@ -96,13 +96,17 @@ static NSString *const KEY_INSTAGRAM_ACCESS_TOKEN = @"KEY_INSTAGRAM_ACCESS_TOKEN
              }
 
              if (![responseObject objectForKeyPath:@"pagination.next_max_id"]) {
-                 // add delegate for successful fetching
-                 NSLog(@"Response: %lu", (unsigned long)imageList.count);
+                 if (self.delegate && [self.delegate respondsToSelector:@selector(SNSServiceFileListFetched:)]) {
+                     [self.delegate SNSServiceFileListFetched:imageList];
+                 }
              } else {
                  [self doRequestFileList:imageList
                                 forMaxID:[responseObject objectForKeyPath:@"pagination.next_max_id"]];
              }
          } failure:^(NSURLSessionTask *operation, NSError *error) {
+             if (self.delegate && [self.delegate respondsToSelector:@selector(SNSServiceError:)]) {
+                 [self.delegate SNSServiceError:error];
+             }
              NSLog(@"Error: %@", error);
          }];
 }

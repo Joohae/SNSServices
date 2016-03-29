@@ -10,6 +10,7 @@
 #define SNSServiceDelegate_h
 
 #import <UIKit/UIKit.h>
+#import "SNSImageSource.h"
 
 @protocol SNSServiceDelegate <NSObject>
 
@@ -18,6 +19,13 @@
  @param error   Reason of failure
  */
 -(void) SNSServiceError:(NSError *)error;
+
+#pragma mark - Service Delegates
+/*!
+ Fetch file list succeeded.
+ @param fileList    An array of SNSImageSource
+ */
+-(void) SNSServiceFileListFetched:(NSArray<SNSImageSource *>*)fileList;
 
 #pragma mark - Authentication Delegates
 /*!
