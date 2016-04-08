@@ -1,6 +1,11 @@
 // MTRandom - Objective-C Mersenne Twister
 //  Objective-C interface by Adam Preble - adampreble.net - 8/6/12
 
+/*
+ You could found the source code from:
+    https://github.com/preble/MTRandom
+ */
+
 #import <Foundation/Foundation.h>
 
 @interface MTRandom : NSObject <NSCoding, NSCopying>
