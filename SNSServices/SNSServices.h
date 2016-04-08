@@ -22,6 +22,8 @@ FOUNDATION_EXPORT const unsigned char SNSServicesVersionString[];
 
 #import <SNSServices/SNSDeviceBase.h>
 #import <SNSServices/SNSDeviceInstagram.h>
+#import <SNSServices/SNSDeviceFlickr.h>
 
 #import <SNSServices/AuthenticationWebViewController.h>
 #import <SNSServices/AuthenticationWVCInstagram.h>
+#import <SNSServices/AuthenticationWVCFlickr.h>
