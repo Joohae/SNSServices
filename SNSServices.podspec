@@ -8,7 +8,7 @@ Pod::Spec.new do |spec|
   spec.source       = { :git => 'ihttps://github.com/Joohae/SNSServices.git', 
 			:tag => '#{s.version}' 
 			}
-  spec.source_files = 'SNSServices/*.{h,m}'
+  spec.source_files = 'SNSServices/**/*.{h,m}'
   spec.resources    = 'SNSSErvices/*.xib'
   spec.framework    = 'SystemConfiguration'
 
