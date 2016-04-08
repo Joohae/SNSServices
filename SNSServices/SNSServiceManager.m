@@ -10,12 +10,53 @@
 
 @interface SNSServiceManager()
 {
+    NSMutableDictionary *_devices;
     NSDictionary *_services;
-    NSArray      *_serviceKeys;
+    NSArray *_serviceKeys;
 }
 @end
 
 @implementation SNSServiceManager
+
+#pragma mark - 
+-(void)requestFileListTo:(SNSServicesType)deviceType {
+    if (![self hasDevice:deviceType]) {
+        NSError *error = [NSError errorWithDomain:@"kr.carrotbooks.SNSServices"
+                                             code:SNSServiceErrorDeviceNotFound
+                                         userInfo:@{NSLocalizedDescriptionKey: @"Service not registerd"}];
+        if (_delegate && [_delegate respondsToSelector:@selector(SNSServiceError:)]) {
+            [_delegate SNSServiceError:error];
+        }
+        return;
+    }
+    
+    SNSDeviceBase *theDevice = [_devices objectForKey:@(deviceType)];
+    if (!theDevice.delegate && _delegate) {
+        theDevice.delegate = _delegate;
+    }
+    [theDevice requestFileList];
+    
+}
+
+#pragma mark - Devices
+-(BOOL)hasDevice:(SNSServicesType)deviceType {
+    SNSDeviceBase * response = [_devices objectForKey:@(deviceType)];
+    return (response && ![response isEqual:[NSNull null]]);
+}
+
+-(void)addDevice:(SNSDeviceBase *)device withType:(SNSServicesType)deviceType {
+    [_devices setObject:device forKey:@(deviceType)];
+}
+
+-(void)removeDevice:(SNSServicesType)deviceType {
+    [_devices removeObjectForKey:@(deviceType)];
+}
+
+-(void)removeAllDevices {
+    [_devices removeAllObjects];
+}
+
+#pragma mark - Services
 +(NSInteger)numberOfServices {
     return SNSServiceManager.sharedManager.numberOfServices;
 }
@@ -24,8 +65,18 @@
     return [SNSServiceManager.sharedManager getServiceAt:index];
 }
 
-#pragma mark - Sub-methods
++(SNSServicesType)getServiceByTitle:(NSString *)title {
+    SNSServicesType response = SNSServiceVoid;
+    for (NSNumber *type in [SNSServiceManager.sharedManager getServiceKeys]) {
+        if ([title isEqualToString:[SNSServiceManager.sharedManager getServiceAt:[type integerValue]][SNSServiceTitle]]) {
+            response = [type integerValue];
+            break;
+        }
+    }
+    return response;
+}
 
+#pragma mark - Sub-methods
 -(NSInteger)numberOfServices {
     return _services.count;
 }
@@ -34,9 +85,14 @@
     return [_services objectForKey:[_serviceKeys objectAtIndex:index]];
 }
 
+-(NSArray *)getServiceKeys {
+    return _serviceKeys;
+}
+
 #pragma mark - Singleton
 -(id)init {
     if (self = [super init]) {
+        _devices = [[NSMutableDictionary alloc] init];
         _services = @{
                       @(SNSServiceInstagram): @{ SNSServiceTitle: @"Instagram",
                                                  SNSServiceIcon: @"icon-sns-instagram.png",

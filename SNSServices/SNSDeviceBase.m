@@ -13,7 +13,7 @@
 - (BOOL) hasAuthentication {
     NSError *error;
 
-    error = [self getErrorInstanceFor:SNSSErviceErrorUnimplemented withMessage:@"Unimplemented method requestFileList"];
+    error = [self getErrorInstanceFor:SNSServiceErrorUnimplemented withMessage:@"Unimplemented method requestFileList"];
     [self invokeErrorDelegation:error];
     return NO;
 }
@@ -23,7 +23,7 @@
  */
 - (void) requestFileList {
     NSError *error;
-    error = [self getErrorInstanceFor:SNSSErviceErrorUnimplemented withMessage:@"Unimplemented method requestFileList"];
+    error = [self getErrorInstanceFor:SNSServiceErrorUnimplemented withMessage:@"Unimplemented method requestFileList"];
     [self invokeErrorDelegation:error];
 }
 

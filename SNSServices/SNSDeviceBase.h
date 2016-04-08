@@ -11,7 +11,8 @@
 
 typedef NS_ENUM(NSInteger, SNSServiceError) {
     SNSServiceErrorOkay,                // No error
-    SNSSErviceErrorUnimplemented        // Unimplemented method error
+    SNSServiceErrorUnimplemented,       // Unimplemented method error
+    SNSServiceErrorDeviceNotFound       // Requested device is not registered
 };
 
 @interface SNSDeviceBase : NSObject
