@@ -19,6 +19,8 @@
 @implementation AuthenticationWVCFlickr
 
 - (void)viewDidLoad {
+    //self.targetURL = [NSString stringWithFormat:@"https://www.flickr.com/services/oauth/authorize"];
+    
     [super viewDidLoad];
     // Do any additional setup after loading the view.
 }
