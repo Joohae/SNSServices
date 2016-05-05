@@ -13,5 +13,7 @@
 +(CryptoUtil *)sharedManager;
 
 -(uint32_t)getUint32NonceFrom:(uint32_t)from to:(uint32_t)to;
+-(NSString *) urlEncode:(NSString *) source;
+-(NSString *)hmacsha1:(NSString *)data secret:(NSString *)key;
 
 @end
