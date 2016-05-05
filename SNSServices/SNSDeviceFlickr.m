@@ -47,7 +47,13 @@ static NSString *const FLICKR_API_BASE = @"https://www.flickr.com/services";
  Request request media file list to SNSService
  */
 - (void) requestFileList {
-    [self requestToken];
+    [self requestToken:^(NSString *response) {
+        
+        
+    } failure:^(NSError *error) {
+        
+        
+    }];
     /*
     if (![self hasAuthentication]) {
         [self addAuthenticationViews];
@@ -56,7 +62,8 @@ static NSString *const FLICKR_API_BASE = @"https://www.flickr.com/services";
      //*/
 }
 
-- (void) requestToken:((^)(NSString *)) success {
+- (void) requestToken:(void (^)(NSString *)) success
+              failure:(void (^)(NSError *)) failure {
     NSMutableDictionary *params = [NSMutableDictionary new];
     [params setObject:[NSString stringWithFormat:@"%d", [[CryptoUtil sharedManager] getUint32NonceFrom:10000000 to:99999999]]
                forKey:@"oauth_nonce"];
