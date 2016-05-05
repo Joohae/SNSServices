@@ -61,16 +61,29 @@
 	uint32_t mti;
 }
 
+// Initialize with a given seed value.  This is the designated initializer
+- (id)initWithSeed:(uint32_t)seed;
+
+// Seed the generator with the current time.
+- (id)init;
 @end
 
 @implementation MTRandom
 
 #pragma mark -
-#pragma mark init
++ (MTRandom *) sharedManager {
+    static dispatch_once_t onceToken;
+    static MTRandom *instance;
+    dispatch_once(&onceToken, ^{
+        instance = [[self alloc] init];
+    });
+    return instance;
+}
 
+#pragma mark init
 - (id)init
 {
-	uint32_t seed = (uint32_t)[NSDate timeIntervalSinceReferenceDate];
+    uint32_t seed = (uint32_t)[[NSDate alloc] timeIntervalSince1970];
 	return [self initWithSeed:seed];
 }
 
@@ -116,16 +129,6 @@
 	[coder encodeObject:arr forKey:@"mt"];
 }
 
-#pragma mark - NSCopying
-
-- (id)copyWithZone:(NSZone *)zone
-{
-	MTRandom *r = [[[self class] allocWithZone:zone] init];
-	r->mti = mti;
-	memcpy(r->mt, mt, sizeof(uint32_t) * N);
-	return r;
-}
-
 #pragma mark - Mersenne Twister
 
 - (void)seed:(uint32_t)s
@@ -144,6 +147,10 @@
 }
 
 // generates a random number on [0,0xffffffff]-interval
++ (uint32_t)randomUInt32 {
+    return [MTRandom.sharedManager randomUInt32];
+}
+
 - (uint32_t)randomUInt32
 {
     uint32_t y;
@@ -185,6 +192,10 @@
 #pragma mark - Auxiliary Methods
 
 /* generates a random number on [0,1]-real-interval */
++ (double)randomDouble {
+    return [MTRandom.sharedManager randomDouble];
+}
+
 - (double)randomDouble
 {
     return [self randomUInt32]*(1.0/4294967295.0);
@@ -192,6 +203,11 @@
 }
 
 /* generates a random number on [0,1)-real-interval */
+
++ (double)randomDouble0To1Exclusive {
+    return [MTRandom.sharedManager randomDouble0To1Exclusive];
+}
+
 - (double)randomDouble0To1Exclusive
 {
     return [self randomUInt32]*(1.0/4294967296.0);
@@ -206,9 +222,17 @@
 
 @implementation MTRandom (Extras)
 
++ (BOOL)randomBool {
+    return [MTRandom.sharedManager randomBool];
+}
+
 - (BOOL)randomBool
 {
 	return [self randomUInt32] < 2147483648;
+}
+
++ (uint32_t)randomUInt32From:(uint32_t)start to:(uint32_t)stop {
+    return [MTRandom.sharedManager randomUInt32From:start to:stop];
 }
 
 - (uint32_t)randomUInt32From:(uint32_t)start to:(uint32_t)stop
@@ -216,6 +240,10 @@
 	NSUInteger width = 1 + stop - start;
 	
 	return start + (floor([self randomDouble0To1Exclusive] * (double)width));
+}
+
++ (double)randomDoubleFrom:(double)start to:(double)stop {
+    return [MTRandom.sharedManager randomUInt32From:start to:stop];
 }
 
 - (double)randomDoubleFrom:(double)start to:(double)stop
@@ -229,14 +257,11 @@
 
 
 #pragma mark -
-
-
 @implementation NSArray (MTRandom)
 
 - (id)mt_randomObjectWithRandom:(MTRandom *)r
 {
-	return [self objectAtIndex:[r randomUInt32From:0 to:(uint32_t)self.count-1]];
+    return [self objectAtIndex:[r randomUInt32From:0 to:(uint32_t)self.count-1]];
 }
-
 @end
 
