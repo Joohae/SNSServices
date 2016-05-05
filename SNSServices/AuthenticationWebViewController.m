@@ -19,6 +19,9 @@
     if (!_targetURL) {
         NSString *frameworkBundleID = @"kr.carrotbooks.SNSServices";
         NSBundle *frameworkBundle = [NSBundle bundleWithIdentifier:frameworkBundleID];
+        if (! frameworkBundle) {
+            frameworkBundle = [NSBundle mainBundle];
+        }
         _targetURL = [frameworkBundle pathForResource:@"defaultpage" ofType:@"html"];
         NSLog(@"Target URL: %@", _targetURL);
     }
