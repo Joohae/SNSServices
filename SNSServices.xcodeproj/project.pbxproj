@@ -12,6 +12,7 @@
 		F970967C1CA2803600616E2F /* SNSImageSource.m in Sources */ = {isa = PBXBuildFile; fileRef = F970967A1CA2803600616E2F /* SNSImageSource.m */; };
 		F970967F1CA2895600616E2F /* NSDictionary+Helper.h in Headers */ = {isa = PBXBuildFile; fileRef = F970967D1CA2895600616E2F /* NSDictionary+Helper.h */; };
 		F97096801CA2895600616E2F /* NSDictionary+Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = F970967E1CA2895600616E2F /* NSDictionary+Helper.m */; };
+		F9B3954D1CDAA57800345697 /* defaultpage.html in Resources */ = {isa = PBXBuildFile; fileRef = F9B3954C1CDAA57800345697 /* defaultpage.html */; };
 		F9D1427F1C96230C002ADD92 /* SNSServices.h in Headers */ = {isa = PBXBuildFile; fileRef = F9D1427E1C96230C002ADD92 /* SNSServices.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9D142911C962331002ADD92 /* SNSDeviceBase.h in Headers */ = {isa = PBXBuildFile; fileRef = F9D1428E1C962331002ADD92 /* SNSDeviceBase.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		F9D142921C962331002ADD92 /* SNSDeviceBase.m in Sources */ = {isa = PBXBuildFile; fileRef = F9D1428F1C962331002ADD92 /* SNSDeviceBase.m */; };
@@ -47,6 +48,7 @@
 		F970967A1CA2803600616E2F /* SNSImageSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SNSImageSource.m; sourceTree = "<group>"; };
 		F970967D1CA2895600616E2F /* NSDictionary+Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDictionary+Helper.h"; sourceTree = "<group>"; };
 		F970967E1CA2895600616E2F /* NSDictionary+Helper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDictionary+Helper.m"; sourceTree = "<group>"; };
+		F9B3954C1CDAA57800345697 /* defaultpage.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = defaultpage.html; sourceTree = "<group>"; };
 		F9D1427B1C96230C002ADD92 /* SNSServices.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SNSServices.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F9D1427E1C96230C002ADD92 /* SNSServices.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SNSServices.h; sourceTree = "<group>"; };
 		F9D142801C96230C002ADD92 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = SNSServices/Info.plist; sourceTree = "<group>"; };
@@ -134,6 +136,7 @@
 		F9D142C61C965B3F002ADD92 /* Authentications */ = {
 			isa = PBXGroup;
 			children = (
+				F9B3954C1CDAA57800345697 /* defaultpage.html */,
 				F90205D31C97AE0800D34B16 /* AuthenticationDelegate.h */,
 				F9D142991C9624EB002ADD92 /* AuthenticationWebViewController.h */,
 				F9D1429A1C9624EB002ADD92 /* AuthenticationWebViewController.m */,
@@ -265,6 +268,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F9D1429E1C9624EB002ADD92 /* AuthenticationWebViewController.xib in Resources */,
+				F9B3954D1CDAA57800345697 /* defaultpage.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
