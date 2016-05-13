@@ -43,7 +43,11 @@
 @implementation CryptoUtil
 
 -(uint32_t)getUint32NonceFrom:(uint32_t)from to:(uint32_t)to {
-    return [_mersenne randomUInt32From:from to:to];
+    if (from < to) {
+        return [_mersenne randomUInt32From:from to:to];
+    } else {
+        return [_mersenne randomUInt32From:to to:from];
+    }
 }
 
 -(NSString *) urlEncode:(NSString *) source {
@@ -65,6 +69,15 @@
     
     return hash;
 }
+
+-(NSTimeInterval)getTimeStamp {
+    return [[NSDate new] timeIntervalSince1970];
+}
+
+-(NSString *)getTimeStampString {
+    return [NSString stringWithFormat:@"%f", [self getTimeStamp]];
+}
+
 #pragma mark - Singleton
 -(CryptoUtil *)init {
     if (self = [super init]) {

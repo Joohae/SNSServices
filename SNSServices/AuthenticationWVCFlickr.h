@@ -8,6 +8,10 @@
 
 #import <SNSServices/SNSServices.h>
 
+#define FLICKR_PERMISSION_READ @"read"
+#define FLICKR_PERMISSION_WRITE @"write"
+#define FLICKR_PERMISSION_DELETE @"delete"
+
 @interface AuthenticationWVCFlickr : AuthenticationWebViewController
 
 /*!
@@ -19,10 +23,10 @@
  Application      : https://www.flickr.com/services/apps/create/apply/
  
  You could get parameter values when register a client.
- @param clientKey       Client Key
- @param clientSecret    Client Secret
+ @param authToken       authentication token which obtained by oauth/request_token
+ @param permission      requesting permission FLICKR_PERMISSION_READ, FLICKR_PERMISSION_WRITE and FLICKR_PERMISSION_DELETE. FLICKR_PERMISSION_WRITE includes FLICKR_PERMISSION_READ. FLICKR_PERMISSION_DELETE includes both FLICKR_PERMISSION_READ and FLICKR_PERMISSION_WRITE
  @param callbackBase    Registered redirect url
  */
-- (void) setClinetKey:(NSString *)clientKey secret:(NSString *)clientSecret andCallbackBase:(NSString *)callbackBase;
+- (void) setAuthToken:(NSString *)authToken permission:(NSString *)permission andCallbackBase:(NSString *)callbackBase;
 
 @end

@@ -7,11 +7,13 @@
 //
 
 #import "AuthenticationWVCFlickr.h"
+#import "FlickrUtil.h"
 
 @interface AuthenticationWVCFlickr()
 
-@property (nonatomic) NSString *clientKey;
-@property (nonatomic) NSString *clientSecret;
+@property (nonatomic) NSString *authToken;
+@property (nonatomic) NSString *authRequestPerm;
+@property (nonatomic) NSString *authGrantedPerm;
 @property (nonatomic) NSString *callbackBase;
 
 @end
@@ -19,7 +21,7 @@
 @implementation AuthenticationWVCFlickr
 
 - (void)viewDidLoad {
-    //self.targetURL = [NSString stringWithFormat:@"https://www.flickr.com/services/oauth/authorize"];
+    self.targetURL = [NSString stringWithFormat:@"https://www.flickr.com/services/oauth/authorize?oauth_token=%@&perms=%@", _authToken, _authRequestPerm];
     
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -31,9 +33,9 @@
 }
 
 #pragma mark - Public Methods
-- (void) setClinetKey:(NSString *)clientKey secret:(NSString *)clientSecret andCallbackBase:(NSString *)callbackBase {
-    _clientKey = clientKey;
-    _clientSecret = clientSecret;
+- (void) setAuthToken:(NSString *)authToken permission:(NSString *)permission andCallbackBase:(NSString *)callbackBase {
+    _authToken = authToken;
+    _authRequestPerm = permission;
     _callbackBase = callbackBase;
 }
 
@@ -48,12 +50,30 @@
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error
 {
-    NSLog(@"Did Fail Load With Error");
+    [self.webView stopLoading];
+    
+    if([error code] == -1009)
+    {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Cannot open the page because it is not connected to the Internet." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+        [self.delegate authenticationFailure:error];
+    }
 }
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
-    NSLog(@"shoudStartLoadWithRequest: %@", request);
+    NSString *responseURL = [request.URL absoluteString];
+    
+    if([responseURL hasPrefix:_callbackBase])
+    {
+        NSString* pattern = [NSString stringWithFormat:@"%@?", _callbackBase];
+        NSString* urlString = [[request URL] absoluteString];
+        NSArray * UrlParts = [urlString componentsSeparatedByString:pattern];
+        urlString = [UrlParts objectAtIndex:1];
+        
+        [self.delegate authenticationSuccess:urlString];
+        return NO;
+    }
     return YES;
 }
 @end

@@ -16,8 +16,18 @@
 #import <AFNetworking/AFNetworking.h>
 #import "NSDictionary+Helper.h"
 #import "CryptoUtil.h"
+#import "FlickrUtil.h"
 
-static NSString *const FLICKR_API_BASE = @"https://www.flickr.com/services";
+static NSString *const FLICKR_API_BASE          = @"https://www.flickr.com/services";
+static NSString *const ERROR_DOMAIN             = @"kr.carrotbooks.SNSService.SNSDeviceFlickr";
+
+static NSString *const KEY_OAUTH_NONCE          = @"oauth_nonce";
+static NSString *const KEY_OAUTH_TIMESTAMP      = @"oauth_timestamp";
+static NSString *const KEY_OAUTH_CONSUMER_KEY   = @"oauth_consumer_key";
+static NSString *const KEY_OAUTH_SIGNATURE_METHOD = @"oauth_signature_method";
+static NSString *const KEY_OAUTH_VERSION        = @"oauth_version";
+static NSString *const KEY_OAUTH_CALLBACK       = @"oauth_callback";
+static NSString *const KEY_OAUTH_SIGNATURE      = @"oauth_signature";
 
 @interface SNSDeviceFlickr ()
 {
@@ -28,7 +38,8 @@ static NSString *const FLICKR_API_BASE = @"https://www.flickr.com/services";
 @property (nonatomic) NSString *clientSecret;
 @property (nonatomic) NSString *clientCallback;
 @property (nonatomic) NSString *clientAuthSecret;
-@property (nonatomic) NSString *clientAuthToken;    // access token
+@property (nonatomic) NSString *clientAuthToken;
+@property (nonatomic) NSString *accessToken;
 @end
 
 @implementation SNSDeviceFlickr
@@ -47,50 +58,76 @@ static NSString *const FLICKR_API_BASE = @"https://www.flickr.com/services";
  Request request media file list to SNSService
  */
 - (void) requestFileList {
-    [self requestToken:^(NSString *response) {
-        
-        
-    } failure:^(NSError *error) {
-        
-        
-    }];
-    /*
     if (![self hasAuthentication]) {
-        [self addAuthenticationViews];
+        [self requestToken:^(NSString *response) {
+            [self addAuthenticationViews];
+        } failure:^(NSError *error) {
+            if (self.delegate && [self.delegate respondsToSelector:@selector(SNSServiceError:)]) {
+                [self.delegate SNSServiceError:error];
+            }
+        }];
         return;
     }
-     //*/
 }
 
 - (void) requestToken:(void (^)(NSString *)) success
-              failure:(void (^)(NSError *)) failure {
+              failure:(void (^)(NSError *)) failure
+{
     NSMutableDictionary *params = [NSMutableDictionary new];
-    [params setObject:[NSString stringWithFormat:@"%d", [[CryptoUtil sharedManager] getUint32NonceFrom:10000000 to:99999999]]
-               forKey:@"oauth_nonce"];
-    [params setObject:[NSString stringWithFormat:@"%f", [[NSDate new] timeIntervalSince1970]]
-               forKey:@"oauth_timestamp"];
-    [params setObject:_clientKey forKey:@"oauth_consumer_key"];
-    [params setObject:@"HMAC-SHA1" forKey:@"oauth_signature_method"];
-    [params setObject:@"1.0" forKey:@"oauth_version"];
-    [params setObject:[[CryptoUtil sharedManager] urlEncode:_clientCallback] forKey:@"oauth_callback"];
+    [params setObject:[FlickrUtil createNonce] forKey:KEY_OAUTH_NONCE];
+    [params setObject:[[CryptoUtil sharedManager] getTimeStampString] forKey:KEY_OAUTH_TIMESTAMP];
+    [params setObject:_clientKey forKey:KEY_OAUTH_CONSUMER_KEY];
+    [params setObject:@"HMAC-SHA1" forKey:KEY_OAUTH_SIGNATURE_METHOD];
+    [params setObject:@"1.0" forKey:KEY_OAUTH_VERSION];
+    [params setObject:[[CryptoUtil sharedManager] urlEncode:_clientCallback] forKey:KEY_OAUTH_CALLBACK];
     
     NSString *baseString = [NSString stringWithFormat:@"%@/%@",FLICKR_API_BASE,@"oauth/request_token"];
     NSString *signature = [self getSignatureOf:baseString params:params];
-    [params setObject:signature forKey:@"oauth_signature"];
+    [params setObject:signature forKey:KEY_OAUTH_SIGNATURE];
     
     NSString *urlString = [NSString stringWithFormat:@"%@?%@", baseString, [self convertDictionaryToUrlString:params withBaseUrl:baseString]];
     NSURL *URL = [NSURL URLWithString:urlString];
     
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     NSMutableDictionary *param = [NSMutableDictionary new];
 
     [manager GET:URL.absoluteString
       parameters:param progress:nil
          success:^(NSURLSessionTask *task, id responseObject) {
-         } failure:^(NSURLSessionTask *operation, NSError *error) {
-             if (self.delegate && [self.delegate respondsToSelector:@selector(SNSServiceError:)]) {
-                 [self.delegate SNSServiceError:error];
+             NSError *error = nil;
+             NSString *responseString = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+             
+             NSDictionary *params = [FlickrUtil parseResponseOfRequestToken:responseString];
+             if ([params count] < 1) {
+                 error = [NSError errorWithDomain:ERROR_DOMAIN
+                                             code:kCFErrorHTTPParseFailure
+                                         userInfo:@{
+                                                    NSLocalizedDescriptionKey: @"Unable to parse response",
+                                                    @"response": responseString
+                                                    }];
+                 failure(error);
+                 return;
              }
+             
+             if (params[@"oauth_callback_confirmed"]
+                 && [params[@"oauth_callback_confirmed"] isEqualToString:@"true"]
+                 && params[@"oauth_token"]) {
+                 _clientAuthToken = params[@"oauth_token"];
+                 _clientAuthSecret = params[@"oauth_token_secret"];
+                 success(params[@"oauth_token"]);
+             } else {
+                 error = [NSError errorWithDomain:ERROR_DOMAIN
+                                             code:kCFErrorHTTPParseFailure
+                                         userInfo:@{
+                                                    NSLocalizedDescriptionKey: @"Unable to fetch oauth_token",
+                                                    @"response": responseString
+                                                    }];
+                 failure(error);
+             }
+             
+         } failure:^(NSURLSessionTask *operation, NSError *error) {
+             failure(error);
          }];
 }
 
@@ -141,7 +178,7 @@ static NSString *const FLICKR_API_BASE = @"https://www.flickr.com/services";
                           initWithNibName:@"AuthenticationWebViewController"
                           bundle:frameworkBundle];
     [_webviewController setDelegate:self];
-//    [_webviewController setClinetID:_clientId secret:_clientSecret andCallbackBase:_callbackBase];
+    [_webviewController setAuthToken:_clientAuthToken permission:FLICKR_PERMISSION_WRITE andCallbackBase:_clientCallback];
     
     [parentVC addChildViewController:_webviewController];
     _webviewController.view.frame = parentVC.view.frame;
