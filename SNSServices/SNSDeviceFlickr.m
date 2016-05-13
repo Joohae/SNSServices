@@ -29,6 +29,10 @@ static NSString *const KEY_OAUTH_VERSION        = @"oauth_version";
 static NSString *const KEY_OAUTH_CALLBACK       = @"oauth_callback";
 static NSString *const KEY_OAUTH_SIGNATURE      = @"oauth_signature";
 
+static NSString *const KEY_OAUTH_TOKEN          = @"oauth_token";
+static NSString *const KEY_OAUTH_TOKEN_SECRET   = @"oauth_token_secret";
+static NSString *const KEY_OAUTH_CALLBACK_CONFIRMED = @"oauth_callback_confirmed";
+
 @interface SNSDeviceFlickr ()
 {
     AuthenticationWVCFlickr *_webviewController;
@@ -37,9 +41,10 @@ static NSString *const KEY_OAUTH_SIGNATURE      = @"oauth_signature";
 @property (nonatomic) NSString *clientKey;
 @property (nonatomic) NSString *clientSecret;
 @property (nonatomic) NSString *clientCallback;
-@property (nonatomic) NSString *clientAuthSecret;
+@property (nonatomic) NSString *clientAuthTokenSecret;
 @property (nonatomic) NSString *clientAuthToken;
 @property (nonatomic) NSString *accessToken;
+
 @end
 
 @implementation SNSDeviceFlickr
@@ -47,11 +52,13 @@ static NSString *const KEY_OAUTH_SIGNATURE      = @"oauth_signature";
     _clientKey = clientKey;
     _clientSecret = clientSecret;
     _clientCallback = [NSString stringWithFormat:@"%@://auth", callbackBase];
-    _clientAuthSecret = @"";    // for later
+    if (!_clientAuthTokenSecret) {
+        _clientAuthTokenSecret = @"";    // for later
+    }
 }
 
 - (BOOL) hasAuthentication {
-    return (_clientAuthToken != nil);
+    return (_accessToken != nil);
 }
 
 /*!
@@ -73,16 +80,11 @@ static NSString *const KEY_OAUTH_SIGNATURE      = @"oauth_signature";
 - (void) requestToken:(void (^)(NSString *)) success
               failure:(void (^)(NSError *)) failure
 {
-    NSMutableDictionary *params = [NSMutableDictionary new];
-    [params setObject:[FlickrUtil createNonce] forKey:KEY_OAUTH_NONCE];
-    [params setObject:[[CryptoUtil sharedManager] getTimeStampString] forKey:KEY_OAUTH_TIMESTAMP];
-    [params setObject:_clientKey forKey:KEY_OAUTH_CONSUMER_KEY];
-    [params setObject:@"HMAC-SHA1" forKey:KEY_OAUTH_SIGNATURE_METHOD];
-    [params setObject:@"1.0" forKey:KEY_OAUTH_VERSION];
-    [params setObject:[[CryptoUtil sharedManager] urlEncode:_clientCallback] forKey:KEY_OAUTH_CALLBACK];
+    NSMutableDictionary *params = [self createBaseParam];
     
-    NSString *baseString = [NSString stringWithFormat:@"%@/%@",FLICKR_API_BASE,@"oauth/request_token"];
-    NSString *signature = [self getSignatureOf:baseString params:params];
+    NSString *baseString = [NSString stringWithFormat:@"%@/%@",FLICKR_API_BASE, @"oauth/request_token"];
+    NSString *signature = [self getSignatureOf:baseString params:params withTokenScret:@""];
+
     [params setObject:signature forKey:KEY_OAUTH_SIGNATURE];
     
     NSString *urlString = [NSString stringWithFormat:@"%@?%@", baseString, [self convertDictionaryToUrlString:params withBaseUrl:baseString]];
@@ -110,12 +112,12 @@ static NSString *const KEY_OAUTH_SIGNATURE      = @"oauth_signature";
                  return;
              }
              
-             if (params[@"oauth_callback_confirmed"]
-                 && [params[@"oauth_callback_confirmed"] isEqualToString:@"true"]
-                 && params[@"oauth_token"]) {
-                 _clientAuthToken = params[@"oauth_token"];
-                 _clientAuthSecret = params[@"oauth_token_secret"];
-                 success(params[@"oauth_token"]);
+             if (params[KEY_OAUTH_CALLBACK_CONFIRMED]
+                 && [params[KEY_OAUTH_CALLBACK_CONFIRMED] isEqualToString:@"true"]
+                 && params[KEY_OAUTH_TOKEN]) {
+                 _clientAuthToken = params[KEY_OAUTH_TOKEN];
+                 _clientAuthTokenSecret = params[KEY_OAUTH_TOKEN_SECRET];
+                 success(_clientAuthToken);
              } else {
                  error = [NSError errorWithDomain:ERROR_DOMAIN
                                              code:kCFErrorHTTPParseFailure
@@ -131,6 +133,25 @@ static NSString *const KEY_OAUTH_SIGNATURE      = @"oauth_signature";
          }];
 }
 
+/*!
+ Create a NSMutableDictionary of common parameters for request
+ */
+- (NSMutableDictionary *) createBaseParam {
+    NSMutableDictionary *response = [NSMutableDictionary new];
+    [response setObject:[FlickrUtil createNonce] forKey:KEY_OAUTH_NONCE];
+    [response setObject:[[CryptoUtil sharedManager] getTimeStampString] forKey:KEY_OAUTH_TIMESTAMP];
+    [response setObject:_clientKey forKey:KEY_OAUTH_CONSUMER_KEY];
+    [response setObject:@"HMAC-SHA1" forKey:KEY_OAUTH_SIGNATURE_METHOD];
+    [response setObject:@"1.0" forKey:KEY_OAUTH_VERSION];
+    [response setObject:[[CryptoUtil sharedManager] urlEncode:_clientCallback] forKey:KEY_OAUTH_CALLBACK];
+    return response;
+}
+
+/*!
+ Convert Dictionary to URL String
+ @param params      parameter dictionary
+ @param baseUrl     url as a prefix of URL string
+ */
 - (NSString *) convertDictionaryToUrlString:(NSDictionary *)params withBaseUrl:(NSString *)baseUrl {
     NSString *response;
     NSMutableString *baseString = [NSMutableString new];
@@ -147,21 +168,21 @@ static NSString *const KEY_OAUTH_SIGNATURE      = @"oauth_signature";
     return response;
 }
 
-- (NSString *) getSignatureOf:(NSString *)baseUrl params:(NSDictionary *)params {
+/*!
+ Calculate Flickr signature
+ @param baseUrl     url as a prefix of URL string
+ @param params      parameter dictionary
+ @param tokenSecret token secret
+ */
+- (NSString *) getSignatureOf:(NSString *)baseUrl params:(NSDictionary *)params withTokenScret:(NSString *)tokenSecret {
     NSString *response;
     
     NSString *encodedUrl = [[CryptoUtil sharedManager] urlEncode:baseUrl];
     NSString *baseData   = [[CryptoUtil sharedManager] urlEncode:[self convertDictionaryToUrlString:params withBaseUrl:baseUrl]];
     
     response = [NSString stringWithFormat:@"GET&%@&%@", encodedUrl, baseData];
-    response = [[CryptoUtil sharedManager] hmacsha1:response secret:[NSString stringWithFormat:@"%@&%@", _clientSecret, _clientAuthSecret]];
+    response = [[CryptoUtil sharedManager] hmacsha1:response secret:[NSString stringWithFormat:@"%@&%@", _clientSecret, tokenSecret]];
     response = [[CryptoUtil sharedManager] urlEncode:response];
-    
-    return response;
-}
-
-- (NSString *) dictionaryToString:(NSDictionary *)params {
-    NSString *response;
     
     return response;
 }
@@ -196,6 +217,13 @@ static NSString *const KEY_OAUTH_SIGNATURE      = @"oauth_signature";
 #pragma mark Authentication Delegate Methods
 - (void) authenticationSuccess:(NSDictionary *)response {
     NSLog(@"Authentication succeeded: %@", response);
+    
+    // TODO: Exchanging the Request Token for an Access Token
+    
+    // TEMPORARY CODE
+    [self removeAuthenticationViews];
+//    [self.delegate SNSWebAuthenticationSuccess];
+    // -- TEMPORARY CODE
     /*
     _accessToken = response[@"ACCESS_TOKEN"];
     dispatch_async(dispatch_get_main_queue(), ^{
