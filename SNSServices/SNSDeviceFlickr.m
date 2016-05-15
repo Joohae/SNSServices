@@ -20,6 +20,7 @@
 
 static NSString *const FLICKR_API_BASE          = @"https://www.flickr.com/services";
 static NSString *const KEY_FLICKR_ACCESS_TOKEN  = @"KEY_INSTAGRAM_ACCESS_TOKEN";
+static NSString *const KEY_FLICKR_AUTH_TOKEN    = @"KEY_FLICKR_AUTH_TOKEN";
 static NSString *const ERROR_DOMAIN             = @"kr.carrotbooks.SNSService.SNSDeviceFlickr";
 
 //  Keys for accessing response data from Flickr
@@ -64,8 +65,9 @@ static NSString *const KEY_OAUTH_VERIFIER       = @"oauth_verifier";
     // Save the access token
     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
     _accessToken = [defaults objectForKey:KEY_FLICKR_ACCESS_TOKEN];
+    _clientAuthToken = [defaults objectForKey:KEY_FLICKR_AUTH_TOKEN];
     
-    return (_accessToken != nil);
+    return (_accessToken != nil && _clientAuthToken != nil);
 }
 
 /*!
@@ -86,6 +88,105 @@ static NSString *const KEY_OAUTH_VERIFIER       = @"oauth_verifier";
     }
     
     NSLog(@"REQUESTING FILE LIST");
+    
+    [self doRequestFileList:[NSMutableArray<SNSImageSource *> new] ofPage:1];
+}
+
+-(void) doRequestFileList:(NSMutableArray<SNSImageSource *> *)imageList ofPage:(NSInteger) pageNo
+{
+    NSMutableDictionary *params = [self createRequestParam];
+    [params setObject:@"flickr.photos.search" forKey:@"method"];
+    [params setObject:@"me" forKey:@"user_id"];
+    // refer https://www.flickr.com/services/api/flickr.photos.search.html for detail search options.
+    [params setObject:@"date-posted-desc" forKey:@"sort"];
+    [params setObject:@"photos" forKey:@"media"];
+    [params setObject:@"url_t,url_o,description,date_upload,date_taken,last_update,media" forKey:@"extras"];
+    [params setObject:@(pageNo) forKey:@"page"];
+    
+    NSString *baseString = [NSString stringWithFormat:@"%@/%@",FLICKR_API_BASE, @"rest"];
+    NSString *signature = [self getSignatureOf:baseString params:params withTokenScret:_accessToken];
+    
+    [params setObject:signature forKey:KEY_OAUTH_SIGNATURE];
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@?%@", baseString, [self convertDictionaryToUrlString:params withBaseUrl:baseString]];
+    NSURL *URL = [NSURL URLWithString:urlString];
+    
+    [self requestWithURL:URL
+          forResponsType:@"text/json"
+                 success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+                     NSDictionary *dict = responseObject;
+                     for (NSDictionary *item in [dict objectForKeyPath:@"photos.photo"]) {
+                         SNSImageSource *imageSource = [SNSImageSource new];
+                         
+                         NSMutableString *titleText = [NSMutableString new];
+                         [titleText appendFormat:@"%@: ", [item objectForKey:@"title"]];
+                         if ([item objectForKeyPath:@"description._content"]) {
+                             [titleText appendString:[item objectForKeyPath:@"description._content"]];
+                         }
+                         imageSource.text = [NSString stringWithString:titleText];
+                         
+                         @try {
+                             imageSource.createdEpoch = [[item objectForKey:@"date_upload"] integerValue];
+                         }
+                         @catch (NSException *ex){
+                             imageSource.createdEpoch = [[NSDate new] timeIntervalSince1970];
+                         }
+                         
+                         imageSource.imageUrl        = [item objectForKeyPath:@"url_o"];
+                         imageSource.imageWidth      = [[item objectForKeyPath:@"width_o"] doubleValue];
+                         imageSource.imageHeight     = [[item objectForKeyPath:@"height_o"] doubleValue];;
+                         
+                         imageSource.thumbnailUrl    = [item objectForKeyPath:@"url_t"];
+                         imageSource.thumbnailWidth  = [[item objectForKeyPath:@"width_t"] doubleValue];
+                         imageSource.thumbnailHeight = [[item objectForKeyPath:@"height_t"] doubleValue];;
+                         
+                         [imageList addObject:imageSource];
+                     }
+                     
+                     NSInteger lastPage = [[dict objectForKeyPath:@"photos.pages"] integerValue];
+                     if (pageNo < lastPage) {
+                         [self doRequestFileList:imageList ofPage:pageNo+1];
+                     } else {
+                         if (self.delegate && [self.delegate respondsToSelector:@selector(SNSServiceFileListFetched:)]) {
+                             [self.delegate SNSServiceFileListFetched:imageList];
+                         }
+                     }
+                 } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+                     if (imageList.count > 0) {
+                         // Send collected image list
+                         if (self.delegate && [self.delegate respondsToSelector:@selector(SNSServiceFileListFetched:)]) {
+                             [self.delegate SNSServiceFileListFetched:imageList];
+                         }
+                     }
+                     if (self.delegate && [self.delegate respondsToSelector:@selector(SNSServiceError:)]) {
+                         [self.delegate SNSServiceError:error];
+                     }
+                     NSLog(@"Fetch file list failed: %@", error);
+                 }];
+}
+
+-(void)requestWithURL:(NSURL *)URL
+       forResponsType:(NSString *)responseType
+              success:(void (^)(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject)) success
+              failure:(void (^)(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error)) failure
+{
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    if ([responseType isEqualToString:@"text/json"]) {
+        manager.responseSerializer = [AFJSONResponseSerializer serializer];
+    } else {
+        manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+        if ([responseType isEqualToString:@"text/xml"]) {
+            manager.responseSerializer.acceptableContentTypes =  [manager.responseSerializer.acceptableContentTypes setByAddingObject:@"text/xml"];
+        } else {
+            // else text/plain
+        }
+    }
+    
+    [manager GET:URL.absoluteString
+      parameters:@{}
+        progress:nil
+         success:success
+         failure:failure];
 }
 
 #pragma mark - Authentication
@@ -266,12 +367,14 @@ static NSString *const KEY_OAUTH_VERIFIER       = @"oauth_verifier";
                               Note: You may need to unescape
                               */
                              _accessToken = response[KEY_OAUTH_TOKEN_SECRET]; // access token for the case
+                             _clientAuthToken = response[KEY_OAUTH_TOKEN];
                              
                              dispatch_async(dispatch_get_main_queue(), ^{
                                  if (_accessToken) {
                                      // Save the access token
                                      NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
                                      [defaults setObject:_accessToken forKey:KEY_FLICKR_ACCESS_TOKEN];
+                                     [defaults setObject:_clientAuthToken forKey:KEY_FLICKR_AUTH_TOKEN];
                                      
                                      // Call the delegate method
                                      [self.delegate SNSWebAuthenticationSuccess];
@@ -311,6 +414,14 @@ static NSString *const KEY_OAUTH_VERIFIER       = @"oauth_verifier";
     [response setObject:_clientKey forKey:KEY_OAUTH_CONSUMER_KEY];
     [response setObject:@"HMAC-SHA1" forKey:KEY_OAUTH_SIGNATURE_METHOD];
     [response setObject:@"1.0" forKey:KEY_OAUTH_VERSION];
+    return response;
+}
+
+- (NSMutableDictionary *) createRequestParam {
+    NSMutableDictionary *response = [self createBaseParam];
+    [response setObject:_clientAuthToken forKey:KEY_OAUTH_TOKEN];
+    [response setObject:@"1" forKey:@"nojsoncallback"];
+    [response setObject:@"json" forKey:@"format"];
     return response;
 }
 
