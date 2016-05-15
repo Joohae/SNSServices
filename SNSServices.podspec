@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name         = 'SNSServices'
-  spec.version      = '0.1.0'
+  spec.version      = '0.2.0'
   spec.license      = { :type => 'BSD' }
   spec.homepage     = 'https://github.com/Joohae/SNSServices'
   spec.authors      = { 'Joohae Kim' => 'joohaek@gmail.com' }
