@@ -71,7 +71,16 @@
         NSArray * UrlParts = [urlString componentsSeparatedByString:pattern];
         urlString = [UrlParts objectAtIndex:1];
         
-        [self.delegate authenticationSuccess:urlString];
+        NSDictionary *response = [FlickrUtil parseURLResponse:urlString];
+
+        if (!self.delegate || ![self.delegate respondsToSelector:@selector(authenticationSuccess:)]) {
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                           reason:@"delegate authenticationSuccess not implemented"
+                                         userInfo:nil];
+            return NO;
+        }
+
+        [self.delegate authenticationSuccess:response];
         return NO;
     }
     return YES;

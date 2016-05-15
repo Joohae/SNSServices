@@ -23,7 +23,7 @@
     return response;
 }
 
-+(NSDictionary *)parseResponseOfRequestToken:(NSString *)response {
++(NSDictionary *)parseURLResponse:(NSString *)response {
     NSMutableDictionary *dict = [NSMutableDictionary new];
     NSArray *items = [response componentsSeparatedByString:@"&"];
     for (NSString *item in items) {

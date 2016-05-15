@@ -19,6 +19,6 @@
  Parse the response of oauth/request_token API.
  @param response the respons from flickr for oauth/request_token
  */
-+(NSDictionary *)parseResponseOfRequestToken:(NSString *)response;
++(NSDictionary *)parseURLResponse:(NSString *)response;
 
 @end

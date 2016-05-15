@@ -19,8 +19,10 @@
 #import "FlickrUtil.h"
 
 static NSString *const FLICKR_API_BASE          = @"https://www.flickr.com/services";
+static NSString *const KEY_FLICKR_ACCESS_TOKEN  = @"KEY_INSTAGRAM_ACCESS_TOKEN";
 static NSString *const ERROR_DOMAIN             = @"kr.carrotbooks.SNSService.SNSDeviceFlickr";
 
+//  Keys for accessing response data from Flickr
 static NSString *const KEY_OAUTH_NONCE          = @"oauth_nonce";
 static NSString *const KEY_OAUTH_TIMESTAMP      = @"oauth_timestamp";
 static NSString *const KEY_OAUTH_CONSUMER_KEY   = @"oauth_consumer_key";
@@ -32,6 +34,7 @@ static NSString *const KEY_OAUTH_SIGNATURE      = @"oauth_signature";
 static NSString *const KEY_OAUTH_TOKEN          = @"oauth_token";
 static NSString *const KEY_OAUTH_TOKEN_SECRET   = @"oauth_token_secret";
 static NSString *const KEY_OAUTH_CALLBACK_CONFIRMED = @"oauth_callback_confirmed";
+static NSString *const KEY_OAUTH_VERIFIER       = @"oauth_verifier";
 
 @interface SNSDeviceFlickr ()
 {
@@ -53,11 +56,15 @@ static NSString *const KEY_OAUTH_CALLBACK_CONFIRMED = @"oauth_callback_confirmed
     _clientSecret = clientSecret;
     _clientCallback = [NSString stringWithFormat:@"%@://auth", callbackBase];
     if (!_clientAuthTokenSecret) {
-        _clientAuthTokenSecret = @"";    // for later
+        _clientAuthTokenSecret = @"";
     }
 }
 
 - (BOOL) hasAuthentication {
+    // Save the access token
+    NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+    _accessToken = [defaults objectForKey:KEY_FLICKR_ACCESS_TOKEN];
+    
     return (_accessToken != nil);
 }
 
@@ -66,7 +73,9 @@ static NSString *const KEY_OAUTH_CALLBACK_CONFIRMED = @"oauth_callback_confirmed
  */
 - (void) requestFileList {
     if (![self hasAuthentication]) {
-        [self requestToken:^(NSString *response) {
+        // Step 1.
+        [self requestRequestToken:^(NSString *response) {
+            // Step 2. and 3.
             [self addAuthenticationViews];
         } failure:^(NSError *error) {
             if (self.delegate && [self.delegate respondsToSelector:@selector(SNSServiceError:)]) {
@@ -75,16 +84,23 @@ static NSString *const KEY_OAUTH_CALLBACK_CONFIRMED = @"oauth_callback_confirmed
         }];
         return;
     }
+    
+    NSLog(@"REQUESTING FILE LIST");
 }
 
-- (void) requestToken:(void (^)(NSString *)) success
-              failure:(void (^)(NSError *)) failure
+#pragma mark - Authentication
+/*!
+ Step 1. Signing Requests and Getting a Request Token
+ */
+- (void) requestRequestToken:(void (^)(NSString *)) success
+                     failure:(void (^)(NSError *)) failure
 {
     NSMutableDictionary *params = [self createBaseParam];
+    [params setObject:[[CryptoUtil sharedManager] urlEncode:_clientCallback] forKey:KEY_OAUTH_CALLBACK];
     
     NSString *baseString = [NSString stringWithFormat:@"%@/%@",FLICKR_API_BASE, @"oauth/request_token"];
     NSString *signature = [self getSignatureOf:baseString params:params withTokenScret:@""];
-
+    
     [params setObject:signature forKey:KEY_OAUTH_SIGNATURE];
     
     NSString *urlString = [NSString stringWithFormat:@"%@?%@", baseString, [self convertDictionaryToUrlString:params withBaseUrl:baseString]];
@@ -93,14 +109,14 @@ static NSString *const KEY_OAUTH_CALLBACK_CONFIRMED = @"oauth_callback_confirmed
     AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];
     NSMutableDictionary *param = [NSMutableDictionary new];
-
+    
     [manager GET:URL.absoluteString
       parameters:param progress:nil
          success:^(NSURLSessionTask *task, id responseObject) {
              NSError *error = nil;
              NSString *responseString = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
              
-             NSDictionary *params = [FlickrUtil parseResponseOfRequestToken:responseString];
+             NSDictionary *params = [FlickrUtil parseURLResponse:responseString];
              if ([params count] < 1) {
                  error = [NSError errorWithDomain:ERROR_DOMAIN
                                              code:kCFErrorHTTPParseFailure
@@ -133,6 +149,158 @@ static NSString *const KEY_OAUTH_CALLBACK_CONFIRMED = @"oauth_callback_confirmed
          }];
 }
 
+// TODO: This method could be refactoring, all the same methods SNSDevice* have the common codes.
+/*!
+ Step 2. Getting the User Authorization using web view
+        The web view using delegates authenticationSuccess: and authenticationFailure:
+ */
+- (void) addAuthenticationViews {
+    UIViewController *parentVC = [self.delegate SNSWebAuthenticationRequired];
+    
+    NSString *frameworkBundleID = @"kr.carrotbooks.SNSServices";
+    NSBundle *frameworkBundle = [NSBundle bundleWithIdentifier:frameworkBundleID];
+    
+    _webviewController = [[AuthenticationWVCFlickr alloc]
+                          initWithNibName:@"AuthenticationWebViewController"
+                          bundle:frameworkBundle];
+    [_webviewController setDelegate:self];
+    [_webviewController setAuthToken:_clientAuthToken permission:FLICKR_PERMISSION_WRITE andCallbackBase:_clientCallback];
+    
+    [parentVC addChildViewController:_webviewController];
+    _webviewController.view.frame = parentVC.view.frame;
+    
+    [parentVC.view addSubview:_webviewController.view];
+    [_webviewController didMoveToParentViewController:parentVC];
+}
+
+- (void) removeAuthenticationViews {
+    [_webviewController.view removeFromSuperview];
+    [_webviewController removeFromParentViewController];
+    _webviewController = nil;
+}
+
+/*!
+ Step 3. Exchanging the Request Token for an Access Token
+ NOTE: Step 2. is done in webview. refer addAuthenticationViews
+ */
+-(void) requestAccessTokenWith:(NSString *)requestToken
+                      verifier:(NSString *)oauthVerifier
+                       success:(void (^)(NSDictionary *)) success
+                       failure:(void (^)(NSError *)) failure
+{
+    NSMutableDictionary *params = [self createBaseParam];
+    [params setObject:oauthVerifier forKey:KEY_OAUTH_VERIFIER];
+    [params setObject:_clientAuthToken forKey:KEY_OAUTH_TOKEN];
+    
+    NSString *baseString = [NSString stringWithFormat:@"%@/%@",FLICKR_API_BASE, @"oauth/access_token"];
+    NSString *signature = [self getSignatureOf:baseString params:params withTokenScret:_clientAuthTokenSecret];
+    
+    NSLog(@"Client auth token secret: %@", _clientAuthTokenSecret);
+    [params setObject:signature forKey:KEY_OAUTH_SIGNATURE];
+    
+    NSString *urlString = [NSString stringWithFormat:@"%@?%@", baseString, [self convertDictionaryToUrlString:params withBaseUrl:baseString]];
+    NSURL *URL = [NSURL URLWithString:urlString];
+    
+    AFHTTPSessionManager *manager = [AFHTTPSessionManager manager];
+    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    NSMutableDictionary *param = [NSMutableDictionary new];
+    
+    [manager GET:URL.absoluteString
+      parameters:param progress:nil
+         success:^(NSURLSessionTask *task, id responseObject) {
+             NSError *error = nil;
+             NSString *responseString = [[NSString alloc] initWithData:responseObject encoding:NSUTF8StringEncoding];
+             
+             NSDictionary *params = [FlickrUtil parseURLResponse:responseString];
+             
+             NSLog(@"Response of access_token: %@", responseString);
+             
+             if ([params count] < 1) {
+                 error = [NSError errorWithDomain:ERROR_DOMAIN
+                                             code:kCFErrorHTTPParseFailure
+                                         userInfo:@{
+                                                    NSLocalizedDescriptionKey: @"Unable to parse response",
+                                                    @"response": responseString
+                                                    }];
+                 failure(error);
+                 return;
+             }
+             success(params);
+         } failure:^(NSURLSessionTask *operation, NSError *error) {
+             failure(error);
+         }];
+}
+
+#pragma mark Authentication Delegate Methods
+- (void) authenticationSuccess:(NSDictionary *)response {
+    NSLog(@"Authentication succeeded: %@", response);
+    
+    [self removeAuthenticationViews];
+    
+    if (response.count < 1
+        || !response[KEY_OAUTH_TOKEN]
+        || !response[KEY_OAUTH_VERIFIER]) {
+        NSError *error;
+        error = [NSError errorWithDomain:ERROR_DOMAIN
+                                    code:kCFURLErrorCannotParseResponse
+                                userInfo:@{
+                                           NSLocalizedDescriptionKey: @"Unable to fetch oauth_token",
+                                           @"response": @""
+                                           }];
+        return;
+    }
+    
+    [self requestAccessTokenWith:response[KEY_OAUTH_TOKEN]
+                        verifier:response[KEY_OAUTH_VERIFIER]
+                         success:^(NSDictionary *response) {
+                             NSLog(@"Got access token: %@", response);
+                             /* A sample response
+                             {
+                                 fullname = "Joohae%20Kim";
+                                 "oauth_token" = "00000000000000000-0000000000000000";
+                                 "oauth_token_secret" = 00000000000000000;
+                                 "user_nsid" = "00000000000";
+                                 username = "Joohae%20Kim";
+                             }
+                              
+                              Note: You may need to unescape
+                              */
+                             _accessToken = response[KEY_OAUTH_TOKEN_SECRET]; // access token for the case
+                             
+                             dispatch_async(dispatch_get_main_queue(), ^{
+                                 if (_accessToken) {
+                                     // Save the access token
+                                     NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+                                     [defaults setObject:_accessToken forKey:KEY_FLICKR_ACCESS_TOKEN];
+                                     
+                                     // Call the delegate method
+                                     [self.delegate SNSWebAuthenticationSuccess];
+                                 }
+                             });
+                         } failure:^(NSError *error) {
+                             dispatch_async(dispatch_get_main_queue(), ^{
+                                 if (self.delegate && [self.delegate respondsToSelector:@selector(SNSWebAuthenticationFailed:)]) {
+                                     [self.delegate SNSWebAuthenticationFailed:error];
+                                 } else {
+                                     @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                                                    reason:@"Delegation undefined and an error raised"
+                                                                  userInfo:@{
+                                                                             NSLocalizedDescriptionKey: error.localizedDescription
+                                                                             }];
+                                 }
+                             });
+                             return;
+                         }];
+}
+
+- (void) authenticationFailure:(NSError *)error {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self removeAuthenticationViews];
+        [self.delegate SNSWebAuthenticationFailed:error];
+    });
+}
+
+#pragma mark Private methods
 /*!
  Create a NSMutableDictionary of common parameters for request
  */
@@ -143,7 +311,6 @@ static NSString *const KEY_OAUTH_CALLBACK_CONFIRMED = @"oauth_callback_confirmed
     [response setObject:_clientKey forKey:KEY_OAUTH_CONSUMER_KEY];
     [response setObject:@"HMAC-SHA1" forKey:KEY_OAUTH_SIGNATURE_METHOD];
     [response setObject:@"1.0" forKey:KEY_OAUTH_VERSION];
-    [response setObject:[[CryptoUtil sharedManager] urlEncode:_clientCallback] forKey:KEY_OAUTH_CALLBACK];
     return response;
 }
 
@@ -185,67 +352,5 @@ static NSString *const KEY_OAUTH_CALLBACK_CONFIRMED = @"oauth_callback_confirmed
     response = [[CryptoUtil sharedManager] urlEncode:response];
     
     return response;
-}
-
-#pragma mark - Authentication
-// TODO: This method can be refactoring
-- (void) addAuthenticationViews {
-    UIViewController *parentVC = [self.delegate SNSWebAuthenticationRequired];
-    
-    NSString *frameworkBundleID = @"kr.carrotbooks.SNSServices";
-    NSBundle *frameworkBundle = [NSBundle bundleWithIdentifier:frameworkBundleID];
-    
-    _webviewController = [[AuthenticationWVCFlickr alloc]
-                          initWithNibName:@"AuthenticationWebViewController"
-                          bundle:frameworkBundle];
-    [_webviewController setDelegate:self];
-    [_webviewController setAuthToken:_clientAuthToken permission:FLICKR_PERMISSION_WRITE andCallbackBase:_clientCallback];
-    
-    [parentVC addChildViewController:_webviewController];
-    _webviewController.view.frame = parentVC.view.frame;
-    
-    [parentVC.view addSubview:_webviewController.view];
-    [_webviewController didMoveToParentViewController:parentVC];
-}
-
-- (void) removeAuthenticationViews {
-    [_webviewController.view removeFromSuperview];
-    [_webviewController removeFromParentViewController];
-    _webviewController = nil;
-}
-
-#pragma mark Authentication Delegate Methods
-- (void) authenticationSuccess:(NSDictionary *)response {
-    NSLog(@"Authentication succeeded: %@", response);
-    
-    // TODO: Exchanging the Request Token for an Access Token
-    
-    // TEMPORARY CODE
-    [self removeAuthenticationViews];
-//    [self.delegate SNSWebAuthenticationSuccess];
-    // -- TEMPORARY CODE
-    /*
-    _accessToken = response[@"ACCESS_TOKEN"];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (_accessToken) {
-            NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-//            [defaults setObject:_accessToken forKey:KEY_INSTAGRAM_ACCESS_TOKEN];
-            // TODO: store access token
-            
-            [self removeAuthenticationViews];
-            [self.delegate SNSWebAuthenticationSuccess];
-        }
-    });
-     */
-}
-
-- (void) authenticationFailure:(NSError *)error {
-    NSLog(@"Authentication failed: %@", error);
-    /*
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self removeAuthenticationViews];
-        [self.delegate SNSWebAuthenticationFailed:error];
-    });
-     */
 }
 @end
